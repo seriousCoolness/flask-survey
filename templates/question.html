@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Question {{number}}{% endblock %}
+
+{% block content %}
+<form action="/answer" method="POST">
+<h1>Question {{number}}</h1>
+<p>{{question}}</p>
+{% if allow_text %}
+    <input type="text" name="answer" placeholder="Answer">
+{% endif %}
+{% if not allow_text %}
+    <ul>
+    {% for choice in choices %}
+        <li><input type="radio" name="answer" value={{choice}} checked>{{choice}}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+<button>Submit Answer</button>
+</form>
+{% endblock %}
