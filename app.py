@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash
+from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import Survey, Question, satisfaction_survey
 
@@ -19,12 +19,18 @@ def home_page():
     survey = satisfaction_survey
     return render_template('home.html', title=survey.title, instructions=survey.instructions)
 
+@app.route('/begin', methods=['POST'])
+def begin_questions():
+
+    session['responses'] = []
+    return redirect("/questions/0")
+
 @app.route('/questions/<int:number>')
 def question_form(number):
     
-    if number != len(responses):
+    if number != len(session['responses']):
         flash("Please do not attempt to access questions out of order.")
-        return redirect(f"/questions/{len(responses)}")
+        return redirect(f"/questions/{len(session['responses'])}")
 
     survey = satisfaction_survey
     if number >= len(survey.questions):
@@ -41,10 +47,10 @@ def submit_answer():
     if not answer:
 
         flash("Must provide valid answer!")
-        return redirect(f"/questions/{len(responses)}")
+        return redirect(f"/questions/{len(session['responses'])}")
     else:
 
-        responses.append(answer)
+        session['responses'].append(answer)
         
-        flash(f"{responses}")
-        return redirect(f"/questions/{len(responses)}")
+        flash(f"{session['responses']}")
+        return redirect(f"/questions/{len(session['responses'])}")
